@@ -13,7 +13,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>G Qurban Restaurant Menu</title>
     <style>
-        /* General styling */
+       /* General styling */
 body {
     margin: 0;
     padding: 0;
@@ -52,13 +52,13 @@ body {
 .category-content {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 1s ease-out;
+    transition: max-height 0.9s ease-out;
 }
 
 .category.active .category-content {
     /* Max-height will be set dynamically via JavaScript */
     overflow: hidden;
-    transition: max-height 1s ease-in;
+    transition: max-height 0.9s ease-in;
 }
 
 /* Menu item styles */
@@ -83,13 +83,16 @@ body {
 }
 
 .menu-item .item-header .dish-name {
-    flex: 1;
+    flex-grow: 1;
+    word-break: break-word;
 }
 
 .menu-item .item-header .price {
-    margin-left: 20px;
+    min-width: 70px;
+    margin-left: 10px;
     color: #d7263d;
     font-weight: bold;
+    text-align: right;
 }
 
 /* Image styles */
@@ -99,7 +102,7 @@ body {
     max-width: 150px; /* Thumbnail size */
     margin-bottom: 10px;
     cursor: pointer;
-    transition: max-width 0.7s ease;
+    transition: max-width 0.9s ease;
 }
 
 .menu-item.expanded img {
@@ -134,7 +137,8 @@ body[dir="rtl"] .menu-item .item-header {
 
 body[dir="rtl"] .menu-item .item-header .price {
     margin-left: 0;
-    margin-right: 20px;
+    margin-right: 10px;
+    text-align: left;
 }
 
 /* Language-specific fonts */
@@ -166,6 +170,7 @@ body[lang="ps"] {
     .menu-item .item-header .price {
         margin-left: 0;
         margin-top: 5px;
+        text-align: left;
     }
 
     body[dir="rtl"] .menu-item .item-header {
@@ -176,8 +181,10 @@ body[lang="ps"] {
     body[dir="rtl"] .menu-item .item-header .price {
         margin-right: 0;
         margin-top: 5px;
+        text-align: right;
     }
 }
+
 
     </style>
 </head>
@@ -185,7 +192,7 @@ body[lang="ps"] {
     <div class="menu-container">
         <!-- Logo -->
         <div class="logo">
-            <img src="Logo/Logo.png" alt="G Qurban Restaurant Logo">
+            <img style="max-width: 100%;" src="Logo/Logo.png" alt="G Qurban Restaurant Logo">
         </div>
 
         <h1>G Qurban Restaurant Menu</h1>
@@ -958,13 +965,22 @@ categories.forEach(category => {
 const menuItems = document.querySelectorAll('.menu-item');
 menuItems.forEach(item => {
     item.addEventListener('click', function(e) {
-        // Prevent the category from collapsing when clicking inside the menu item
         e.stopPropagation();
         this.classList.toggle('expanded');
         
-        // Update the category's max-height to accommodate the expanded/collapsed item
         const categoryContent = this.closest('.category-content');
-        updateCategoryHeight(categoryContent);
+        const img = this.querySelector('img');
+        
+        if (img) {
+            // Listen for the transitionend event on the image
+            img.addEventListener('transitionend', function onTransitionEnd() {
+                updateCategoryHeight(categoryContent);
+                img.removeEventListener('transitionend', onTransitionEnd);
+            });
+        } else {
+            // If no image, update height immediately
+            updateCategoryHeight(categoryContent);
+        }
     });
 });
 
