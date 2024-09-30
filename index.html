@@ -936,36 +936,78 @@ body[lang="ps"] {
 
     <script>
         // Add animation to each category
-        const categories = document.querySelectorAll('.category h2');
-        categories.forEach(category => {
-            category.addEventListener('click', function() {
-                this.parentElement.classList.toggle('active');
-            });
-        });
+const categories = document.querySelectorAll('.category h2');
+categories.forEach(category => {
+    category.addEventListener('click', function() {
+        const parent = this.parentElement;
+        const content = parent.querySelector('.category-content');
+        
+        if (parent.classList.contains('active')) {
+            // Collapse the category
+            content.style.maxHeight = content.scrollHeight + 'px';
+            content.offsetHeight; // Trigger reflow
+            content.style.maxHeight = '0';
+            parent.classList.remove('active');
+        } else {
+            // Expand the category
+            content.style.maxHeight = content.scrollHeight + 'px';
+            parent.classList.add('active');
+        }
+    });
+});
 
-        // Add animation to each menu item
-        const menuItems = document.querySelectorAll('.menu-item');
-        menuItems.forEach(item => {
-            item.addEventListener('click', function() {
-                this.classList.toggle('expanded');
-            });
-        });
+// Add animation to each menu item
+const menuItems = document.querySelectorAll('.menu-item');
+menuItems.forEach(item => {
+    item.addEventListener('click', function() {
+        this.classList.toggle('expanded');
+    });
+});
 
-        // Language selector functionality
+// Language selector functionality
 const languageSelector = document.getElementById('language');
 languageSelector.addEventListener('change', function() {
     const selectedLang = this.value;
-    // Set direction based on language
-    if (selectedLang === 'ar' || selectedLang === 'ur' || selectedLang === 'ps') {
+    // Set direction and language attributes
+    if (['ar', 'ur', 'ps'].includes(selectedLang)) {
         document.body.setAttribute('dir', 'rtl');
     } else {
         document.body.setAttribute('dir', 'ltr');
     }
-    // Set language attribute on body for font changes
     document.body.setAttribute('lang', selectedLang);
     // Update all translatable elements
     updateLanguage(selectedLang);
 });
+
+function updateLanguage(lang) {
+    // Update category titles
+    const categories = document.querySelectorAll('.category h2');
+    categories.forEach(cat => {
+        cat.textContent = cat.getAttribute(`data-${lang}`);
+    });
+
+    // Update dish names and descriptions
+    const dishNames = document.querySelectorAll('.dish-name');
+    dishNames.forEach(name => {
+        name.textContent = name.getAttribute(`data-${lang}`);
+    });
+
+    const shortDescriptions = document.querySelectorAll('.short-description');
+    shortDescriptions.forEach(desc => {
+        desc.textContent = desc.getAttribute(`data-${lang}`);
+    });
+
+    const fullDescriptions = document.querySelectorAll('.full-description');
+    fullDescriptions.forEach(desc => {
+        desc.textContent = desc.getAttribute(`data-${lang}`);
+    });
+
+    // Update max-height for expanded categories
+    const expandedCategories = document.querySelectorAll('.category.active .category-content');
+    expandedCategories.forEach(content => {
+        content.style.maxHeight = content.scrollHeight + 'px';
+    });
+}
 
 // Initialize language on page load
 document.addEventListener('DOMContentLoaded', function() {
@@ -973,31 +1015,6 @@ document.addEventListener('DOMContentLoaded', function() {
     updateLanguage('en');
 });
 
-        function updateLanguage(lang) {
-            // Update category titles
-            const categories = document.querySelectorAll('.category h2');
-            categories.forEach(cat => {
-                cat.textContent = cat.getAttribute(`data-${lang}`);
-            });
-            // Update dish names, descriptions, etc.
-            const dishNames = document.querySelectorAll('.dish-name');
-            dishNames.forEach(name => {
-                name.textContent = name.getAttribute(`data-${lang}`);
-            });
-            const shortDescriptions = document.querySelectorAll('.short-description');
-            shortDescriptions.forEach(desc => {
-                desc.textContent = desc.getAttribute(`data-${lang}`);
-            });
-            const fullDescriptions = document.querySelectorAll('.full-description');
-            fullDescriptions.forEach(desc => {
-                desc.textContent = desc.getAttribute(`data-${lang}`);
-            });
-        }
-
-        // Initialize language on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            updateLanguage('en');
-        });
     </script>
 </body>
 </html>
